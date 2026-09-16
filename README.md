@@ -9,6 +9,18 @@
 
 ---
 
+## 下载
+
+| 方式 | 链接 |
+|------|------|
+| **便携版 EXE**（推荐） | [OpheceToolbox-1.0.0-portable.exe](https://github.com/houtian2333/ophece-toolbox/releases/download/v1.0.0/OpheceToolbox-1.0.0-portable.exe) · 88 MB · 双击即用 |
+| **源码构建** | `git clone` 后运行 `.\build.ps1` |
+| **所有版本** | [Releases](https://github.com/houtian2333/ophece-toolbox/releases) |
+
+> 便携版内嵌 Python 后端，目标机器**无需安装 Python**。部分系统操作（DISM / 关闭休眠 / 事件日志 / 虚拟内存）需**右键以管理员身份运行**。
+
+---
+
 ## 目录
 
 - [项目简介](#项目简介)
@@ -484,6 +496,13 @@ gh release create v1.0.0 `
   --notes "首个版本：41 个清理分类 + 13 项系统优化"
 ```
 
+> **注意**：`gh` 上传时会把**中文文件名中的非 ASCII 字符丢弃**（`欧菲斯工具工具箱 1.0.0.exe` → `1.0.0.exe`）。建议先重命名为纯 ASCII，或上传后用 API 改名：
+>
+> ```powershell
+> $id = (gh api repos/<owner>/<repo>/releases/tags/v1.0.0 | ConvertFrom-Json).assets[0].id
+> gh api --method PATCH "repos/<owner>/<repo>/releases/assets/$id" -f name="OpheceToolbox-1.0.0-portable.exe"
+> ```
+
 ---
 
 ## 常见问题
@@ -511,6 +530,22 @@ gh release create v1.0.0 `
 Get-NetTCPConnection -LocalPort 19999 -State Listen
 ```
 结束占用进程，或修改 `mz_server.py` 顶部的 `PORT` 与 `main.js` 中的 `SERVER_URL`。
+
+**Q: `git push` 报 `Failed to connect to github.com port 443`**
+
+若本机有代理（Clash / V2Ray 等），git 默认不会走系统代理，需显式配置。注意 **URL 级配置优先级高于 `http.proxy`**，两者冲突时以前者为准：
+
+```powershell
+# 查看是否已被 URL 级配置覆盖（空值 = 强制直连）
+git config --global --get-regexp 'http\..*\.proxy'
+
+# 为单个仓库指定代理（推荐，不改全局）
+git config http.proxy http://127.0.0.1:7897
+git config 'http.https://github.com.proxy' http://127.0.0.1:7897
+
+# 验证
+git ls-remote https://github.com/<owner>/<repo>.git
+```
 
 ---
 
