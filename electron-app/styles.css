@@ -1,0 +1,391 @@
+/* ══════════════════════════════════════════════════════════════════
+   欧菲斯工具工具箱 — 自然有机风 (Natural Organic)
+   Earth tones · rounded-[2rem] · serif headings · warm cream
+   ══════════════════════════════════════════════════════════════════ */
+
+:root {
+  --cream: #faf6f1;
+  --cream-deep: #f3ece4;
+  --white: #ffffff;
+  --stone-50: #fafaf9;
+  --stone-100: #f5f5f4;
+  --stone-200: #e7e5e4;
+  --stone-300: #d6d3d1;
+  --stone-400: #a8a29e;
+  --stone-500: #78716c;
+  --stone-600: #57534e;
+  --stone-700: #44403c;
+  --stone-800: #292524;
+  --stone-900: #1c1917;
+  --sage: #8b9d77;
+  --sage-light: #a3b68f;
+  --sage-dark: #6f7f5e;
+  --tan: #d4a373;
+  --tan-light: #e0bb91;
+  --olive: #606c38;
+  --amber-50: #fffbeb;
+  --radius: 2rem;
+  --radius-sm: 9999px;
+}
+
+/* ── Base ────────────────────────────────────────────────────────── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", Georgia, serif;
+  background: var(--cream);
+  color: var(--stone-800);
+  display: flex; flex-direction: column;
+  height: 100vh; overflow: hidden;
+  /* 织物纹理 */
+  background-image:
+    radial-gradient(ellipse at 10% 20%, rgba(139,157,119,.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 70%, rgba(212,163,115,.05) 0%, transparent 60%);
+  user-select: none;
+}
+
+/* Sans fallback for UI elements */
+button, input, .cat-row, .toolbar, .status-bar, .sys-option, .backup-table {
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei UI", system-ui, sans-serif;
+}
+
+/* ── Header ──────────────────────────────────────────────────────── */
+.header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 28px;
+  background: var(--white);
+  border-bottom: 1px solid var(--stone-200);
+  -webkit-app-region: drag;
+}
+.app-title {
+  font-family: "Noto Serif SC", serif;
+  font-size: 22px; font-weight: 700;
+  color: var(--stone-800); letter-spacing: .02em;
+}
+.app-version { font-size: 12px; color: var(--stone-400); }
+.server-status { font-size: 12px; margin-left: auto; -webkit-app-region: no-drag; }
+.server-status.connecting { color: var(--tan); }
+.server-status.connected { color: var(--sage); }
+.server-status.error { color: #c0392b; }
+
+/* ── Tab Navigation ──────────────────────────────────────────────── */
+.tab-nav {
+  display: flex; gap: 0;
+  padding: 0 28px;
+  background: var(--white);
+  border-bottom: 1px solid var(--stone-200);
+}
+.tab-btn {
+  padding: 14px 28px;
+  font-size: 14px; font-weight: 500; letter-spacing: .03em;
+  background: none; color: var(--stone-500);
+  border: none; border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color .3s ease, border-color .3s ease;
+}
+.tab-btn:hover { color: var(--stone-800); }
+.tab-btn.active { color: var(--stone-800); border-bottom-color: var(--sage); }
+
+/* ── Tab Content ─────────────────────────────────────────────────── */
+.tab-content { display: none; flex: 1; flex-direction: column; overflow: hidden; padding: 20px 28px; }
+.tab-content.active { display: flex; }
+
+/* ── Toolbar ─────────────────────────────────────────────────────── */
+.toolbar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; flex-wrap: wrap;
+}
+.bottom-toolbar { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--stone-200); }
+
+/* ── Buttons ─────────────────────────────────────────────────────── */
+.btn {
+  padding: 10px 22px;
+  font-size: 13px; font-weight: 500; letter-spacing: .02em;
+  background: var(--white); color: var(--stone-700);
+  border: 1px solid var(--stone-200);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all .3s cubic-bezier(.4,0,.2,1);
+}
+.btn:hover { background: var(--stone-100); border-color: var(--stone-300); }
+.btn:active { transform: scale(.97); }
+.btn-primary {
+  background: var(--stone-800); color: var(--stone-50);
+  border-color: var(--stone-800);
+}
+.btn-primary:hover { background: var(--stone-700); border-color: var(--stone-700); }
+.btn-success {
+  background: var(--sage); color: #fff;
+  border-color: var(--sage);
+}
+.btn-success:hover { background: var(--sage-dark); border-color: var(--sage-dark); }
+.btn-danger {
+  background: #c0392b; color: #fff;
+  border-color: #c0392b;
+}
+.btn-danger:hover { background: #a93226; }
+
+/* ── Loading ─────────────────────────────────────────────────────── */
+.loading { padding: 28px; text-align: center; color: var(--stone-400); font-size: 14px; }
+.spinner {
+  width: 22px; height: 22px;
+  border: 3px solid var(--stone-200);
+  border-top-color: var(--sage);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+.spinner.hidden { display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Disk Cards ──────────────────────────────────────────────────── */
+.disk-cards { display: flex; gap: 18px; margin: 14px 0; flex-wrap: wrap; }
+.disk-card {
+  flex: 1; min-width: 270px;
+  background: var(--white);
+  border: 1px solid var(--stone-200);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  transition: border-color .3s ease;
+}
+.disk-card:hover { border-color: var(--sage); }
+.disk-card .disk-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 12px;
+}
+.disk-card .disk-letter {
+  font-family: "Noto Serif SC", serif;
+  font-size: 19px; font-weight: 700; color: var(--stone-800);
+}
+.disk-card .disk-percent { font-size: 15px; font-weight: 600; }
+.disk-card .disk-bar-bg {
+  height: 10px; background: var(--stone-100); border-radius: var(--radius-sm);
+  margin-bottom: 10px; overflow: hidden;
+}
+.disk-card .disk-bar-fill {
+  height: 100%; border-radius: var(--radius-sm);
+  transition: width .6s cubic-bezier(.4,0,.2,1);
+}
+.disk-card .disk-detail { font-size: 12px; color: var(--stone-500); }
+
+/* ── Category List ───────────────────────────────────────────────── */
+.cat-list-wrapper {
+  flex: 1; overflow-y: auto;
+  background: var(--white);
+  border: 1px solid var(--stone-200);
+  border-radius: var(--radius);
+  margin: 10px 0;
+}
+.cat-list { min-height: 100%; display: flex; flex-direction: column; }
+.cat-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 20px; border-bottom: 1px solid var(--stone-100);
+  cursor: pointer;
+  transition: background .25s ease, transform .25s ease;
+  font-size: 13px; color: var(--stone-700);
+}
+.cat-row:hover { background: var(--amber-50); }
+.cat-row:last-child { border-bottom: none; }
+.cat-row .cat-check {
+  width: 20px; height: 20px; min-width: 20px;
+  border: 2px solid var(--stone-300); border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: transparent;
+  transition: all .25s ease;
+}
+.cat-row.checked .cat-check {
+  background: var(--sage); border-color: var(--sage); color: #fff;
+}
+.cat-row .cat-name { flex: 1; }
+.cat-row .cat-size { width: 100px; text-align: right; color: var(--stone-500); font-size: 12px; }
+.cat-row .cat-count { width: 80px; text-align: right; color: var(--stone-400); font-size: 12px; }
+
+/* 风险等级徽标 */
+.cat-row .cat-risk {
+  width: 62px; text-align: center; flex-shrink: 0;
+  font-size: 11px; font-weight: 600; letter-spacing: .02em;
+  padding: 2px 0; border-radius: var(--radius-sm);
+  cursor: help;
+}
+.cat-risk.risk-safe    { background: rgba(139,157,119,.15); color: var(--sage-dark); }
+.cat-risk.risk-caution { background: rgba(212,163,115,.18); color: #9a6b32; }
+.cat-risk.risk-high    { background: rgba(192,57,43,.13);  color: #a93226; }
+
+.cat-row .cat-expand {
+  width: 28px; text-align: center;
+  font-size: 10px; color: var(--stone-400);
+  cursor: pointer; transition: transform .2s ease;
+}
+.cat-row .cat-expand:hover { color: var(--stone-600); }
+
+/* Category detail rows (individual files) */
+.cat-detail {
+  display: flex; align-items: center; gap: 12px;
+  padding: 4px 20px 4px 44px;
+  font-size: 12px; color: var(--stone-500);
+  border-bottom: 1px solid var(--stone-50);
+  transition: background .2s ease;
+}
+.cat-detail:hover { background: #fdfbf7; }
+.cat-detail .cat-name {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-family: "Cascadia Code", "Consolas", monospace;
+}
+/* 未勾选的子项变灰 */
+.cat-detail:not(.checked) { opacity: .45; }
+.cat-detail .item-check {
+  width: 20px; height: 20px; min-width: 20px;
+  border: 2px solid var(--stone-300); border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: transparent;
+  transition: all .25s ease;
+}
+.cat-detail.checked .item-check {
+  background: var(--sage-light); border-color: var(--sage); color: #fff;
+}
+.cat-detail .cat-size { width: 105px; text-align: right; font-size: 11px; }
+.cat-detail .cat-count { width: 85px; text-align: right; font-size: 11px; }
+
+/* 半选状态 (分类内部分子项被勾选) */
+.cat-row.partial .cat-check {
+  background: var(--amber-50); border-color: var(--tan); color: var(--tan);
+}
+
+/* 合计标签 */
+.total-label { font-size: 13px; font-weight: 600; margin-left: auto; white-space: nowrap; }
+.total-label .t-all   { color: var(--stone-500); }
+.total-label .t-sel   { color: var(--sage-dark); font-weight: 700; }
+.total-label .t-cat   { color: var(--tan); }
+.total-label .t-sep   { color: var(--stone-300); margin: 0 8px; }
+.total-label .t-risk  { color: #a93226; font-weight: 700; cursor: help; }
+.total-label .t-scan  { color: var(--sage-dark); }
+
+/* ── 扫描中居中提示 ─────────────────────────────────────────────── */
+.scan-overlay {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  flex: 1; min-height: 260px; gap: 14px;
+  padding: 40px 20px;
+}
+.scan-spinner {
+  width: 46px; height: 46px;
+  border: 3px solid var(--stone-200);
+  border-top-color: var(--sage);
+  border-right-color: var(--tan);
+  border-radius: 50%;
+  animation: spin .9s linear infinite;
+}
+.scan-title {
+  font-family: "Noto Serif SC", serif;
+  font-size: 17px; font-weight: 700; color: var(--stone-700);
+  letter-spacing: .04em;
+}
+.scan-title.scan-fail { color: #a93226; }
+.scan-sub { font-size: 12px; color: var(--stone-400); }
+
+/* 轻量按钮 */
+.btn-ghost {
+  background: transparent; border-color: transparent;
+  color: var(--stone-500); padding: 10px 14px;
+}
+.btn-ghost:hover { background: var(--stone-100); color: var(--stone-800); }
+
+/* ── System Clean Tab ────────────────────────────────────────────── */
+.warning-banner {
+  background: rgba(212,163,115,.12); color: #8b4513;
+  padding: 12px 20px; border-radius: var(--radius);
+  border: 1px solid rgba(212,163,115,.25);
+  font-size: 13px; font-weight: 500; margin-bottom: 14px;
+}
+.sys-scan-info {
+  background: var(--white); border: 1px solid var(--stone-200);
+  border-radius: var(--radius); padding: 14px 20px;
+  margin: 10px 0; font-size: 13px; color: var(--stone-600);
+  min-height: 44px;
+}
+.sys-options {
+  flex: 1; overflow-y: auto;
+  background: var(--white); border: 1px solid var(--stone-200);
+  border-radius: var(--radius); margin: 10px 0;
+}
+.sys-option {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 20px; border-bottom: 1px solid var(--stone-100);
+  font-size: 13px; color: var(--stone-700);
+  cursor: pointer;
+  transition: background .25s ease;
+}
+.sys-option:hover { background: var(--amber-50); }
+.sys-option:last-child { border-bottom: none; }
+.sys-option input[type="checkbox"] {
+  width: 18px; height: 18px; accent-color: var(--sage);
+}
+.sys-note { margin: 10px 0; font-size: 12px; color: var(--stone-500); line-height: 1.7; }
+
+/* ── Backup Tab ──────────────────────────────────────────────────── */
+.backup-list-wrapper {
+  flex: 1; overflow-y: auto;
+  background: var(--white); border: 1px solid var(--stone-200);
+  border-radius: var(--radius); margin: 10px 0;
+}
+.backup-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+.backup-table th {
+  text-align: left; padding: 12px 20px;
+  background: var(--cream-deep); color: var(--stone-600);
+  font-weight: 600; font-family: "Noto Sans SC", sans-serif;
+  border-bottom: 1px solid var(--stone-200);
+}
+.backup-table td {
+  padding: 10px 20px; border-bottom: 1px solid var(--stone-100);
+  color: var(--stone-700);
+}
+.backup-table tr.selected { background: rgba(139,157,119,.08); }
+.backup-table tr { cursor: pointer; transition: background .25s ease; }
+.backup-table tr:hover { background: var(--amber-50); }
+
+/* ── Status Bar ──────────────────────────────────────────────────── */
+.status-bar {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 28px;
+  background: var(--white);
+  border-top: 1px solid var(--stone-200);
+}
+.progress-bar {
+  width: 170px; height: 5px; background: var(--stone-200);
+  border-radius: var(--radius-sm); overflow: hidden;
+}
+.progress-fill {
+  width: 0%; height: 100%; background: var(--sage);
+  border-radius: var(--radius-sm);
+  transition: width .4s cubic-bezier(.4,0,.2,1);
+}
+.progress-bar.active .progress-fill {
+  animation: progressAnim 1.8s ease-in-out infinite;
+}
+@keyframes progressAnim {
+  0% { width: 0%; margin-left: 0; }
+  50% { width: 65%; margin-left: 15%; }
+  100% { width: 0%; margin-left: 100%; }
+}
+.status-text { font-size: 12px; color: var(--stone-500); }
+
+/* ── Hint ────────────────────────────────────────────────────────── */
+.hint { padding: 16px 0; font-size: 13px; color: var(--stone-500); text-align: center; }
+
+/* ── Scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--stone-200); border-radius: var(--radius-sm); }
+::-webkit-scrollbar-thumb:hover { background: var(--stone-300); }
+
+/* ── Reduced Motion ──────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

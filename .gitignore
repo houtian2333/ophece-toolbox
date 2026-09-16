@@ -1,0 +1,38 @@
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# ── PyInstaller 构建产物 ──
+build/
+dist/
+*.spec.bak
+
+# ── Electron / Node ──
+node_modules/
+electron-app/dist-electron/
+npm-debug.log*
+yarn-error.log*
+
+# ── 内嵌后端可执行文件 (由 build.ps1 生成, 不入库) ──
+electron-app/assets/*.exe
+
+# ── 逆向分析临时产物 ──
+tmp/
+work/
+*.dump
+
+# ── 第三方二进制 (不随本仓库分发) ──
+磨针c盘清理v3.3.2免安装版/
+PDF专业压缩工具*.exe
+
+# ── 编辑器 / 系统 ──
+.vscode/
+.idea/
+.reasonix/
+reasonix.toml
+Thumbs.db
+desktop.ini
+.DS_Store

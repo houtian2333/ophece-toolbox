@@ -1,0 +1,43 @@
+{
+  "name": "ophece-toolbox",
+  "version": "1.0.0",
+  "description": "欧菲斯工具工具箱 — C盘清理 + 系统优化 桌面应用",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win portable",
+    "dist": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "com.ophece.toolbox",
+    "productName": "欧菲斯工具工具箱",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "extraResources": [
+      {
+        "from": "assets/mz_server.exe",
+        "to": "mz_server.exe"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": null
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "欧菲斯工具工具箱"
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  }
+}

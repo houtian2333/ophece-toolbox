@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>欧菲斯工具工具箱</title>
+  <link rel="stylesheet" href="styles.css">
+  <meta name="color-scheme" content="light">
+</head>
+<body>
+  <!-- 标题栏 -->
+  <header class="header">
+    <h1 class="app-title">🌿 欧菲斯工具工具箱</h1>
+    <span class="app-version">v1.0.0</span>
+    <span id="serverStatus" class="server-status connecting">● 连接中...</span>
+  </header>
+
+  <!-- 标签导航 -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="overview">系统概览</button>
+    <button class="tab-btn" data-tab="basic">基础清理</button>
+    <button class="tab-btn" data-tab="system">系统清理</button>
+    <button class="tab-btn" data-tab="backup">备份管理</button>
+  </nav>
+
+  <!-- ━━━━━━━━━ 系统概览 Tab ━━━━━━━━━ -->
+  <section class="tab-content active" id="tab-overview">
+    <div class="toolbar">
+      <button class="btn" onclick="refreshOverview()">🔄 刷新磁盘信息</button>
+    </div>
+    <div id="diskCards" class="disk-cards">
+      <div class="loading">加载中...</div>
+    </div>
+    <div class="hint">💡 点击「基础清理」扫描C盘可清理内容 →「系统清理」执行深度优化</div>
+  </section>
+
+  <!-- ━━━━━━━━━ 基础清理 Tab ━━━━━━━━━ -->
+  <section class="tab-content" id="tab-basic">
+    <div class="toolbar">
+      <button class="btn btn-primary" onclick="scanBasic()">🔍 扫描基础清理</button>
+      <button class="btn" onclick="toggleAllCats(true)">全选</button>
+      <button class="btn" onclick="toggleAllCats(false)">全不选</button>
+      <button class="btn btn-ghost" onclick="expandAllDetails(true)">展开全部</button>
+      <button class="btn btn-ghost" onclick="expandAllDetails(false)">收起全部</button>
+      <span id="basicTotal" class="total-label"></span>
+      <div id="basicSpinner" class="spinner hidden"></div>
+    </div>
+    <div class="cat-list-wrapper">
+      <div id="catList" class="cat-list">
+        <div class="loading">点击「扫描基础清理」开始</div>
+      </div>
+    </div>
+    <div class="toolbar bottom-toolbar">
+      <button class="btn btn-success" onclick="cleanBasic()">🗑 清理选中项</button>
+      <button class="btn" onclick="previewBasic()">👁 仅预览(不删除)</button>
+    </div>
+  </section>
+
+  <!-- ━━━━━━━━━ 系统清理 Tab ━━━━━━━━━ -->
+  <section class="tab-content" id="tab-system">
+    <div class="warning-banner">⚠ 系统清理涉及系统级操作，请谨慎选择</div>
+    <div class="toolbar">
+      <button class="btn btn-primary" onclick="scanSystem()">🔍 扫描系统清理项</button>
+      <div id="sysSpinner" class="spinner hidden"></div>
+    </div>
+    <div id="sysScanInfo" class="sys-scan-info"></div>
+    <div class="sys-options">
+      <label class="sys-option"><input type="checkbox" id="sys-dism"> DISM组件清理 (系统组件存储、驱动、补丁)</label>
+      <label class="sys-option"><input type="checkbox" id="sys-usn"> USN日志删除 (NTFS文件系统日志)</label>
+      <label class="sys-option"><input type="checkbox" id="sys-restore"> 系统还原点删除 (卷影副本 vssadmin)</label>
+      <label class="sys-option"><input type="checkbox" id="sys-hibernate"> 关闭休眠 (删除 hiberfil.sys)</label>
+      <label class="sys-option"><input type="checkbox" id="sys-vmem"> 转移虚拟内存 (pagefile.sys → 非C盘)</label>
+      <label class="sys-option"><input type="checkbox" id="sys-eventlog"> 事件日志清理 (Security/Application/System)</label>
+      <label class="sys-option"><input type="checkbox" id="sys-psclean"> PowerShell综合清理 (缓存/浏览器/回收站)</label>
+      <label class="sys-option"><input type="checkbox" id="sys-browser-sqlite"> 浏览器深度SQLite (磨针 mozhen.Special: History/Favicons/WebData/places/favicons)</label>
+      <label class="sys-option"><input type="checkbox" id="sys-memreduct"> 内存整理 (磨针 memreduct.exe /clean /silent)</label>
+      <label class="sys-option"><input type="checkbox" id="sys-prefetch"> 预取与分发缓存 (磨针 boost_prefetch: Download/Prefetch/Temp)</label>
+      <label class="sys-option"><input type="checkbox" id="sys-appcache"> 应用缓存目录 (磨针 clean_application_cache: Packages)</label>
+      <label class="sys-option"><input type="checkbox" id="sys-croottmp"> C盘根目录残留 (磨针 clean_tmp_files: *.tmp/*.cache/*.msp)</label>
+      <label class="sys-option"><input type="checkbox" id="sys-recycle-force"> 强制清空回收站 (磨针 Clear-RecycleBin -Force)</label>
+    </div>
+    <div class="sys-note">注意: 「转移虚拟内存」后如出现浏览器崩溃，请以管理员运行 PowerShell 改回系统管理。</div>
+    <div class="toolbar bottom-toolbar">
+      <button class="btn btn-danger" onclick="cleanSystem()">🗑 执行系统清理</button>
+    </div>
+  </section>
+
+  <!-- ━━━━━━━━━ 备份管理 Tab ━━━━━━━━━ -->
+  <section class="tab-content" id="tab-backup">
+    <div class="toolbar">
+      <button class="btn" onclick="refreshBackups()">🔄 刷新备份列表</button>
+      <span id="backupInfo" class="total-label"></span>
+    </div>
+    <div class="backup-list-wrapper">
+      <table id="backupTable" class="backup-table">
+        <thead><tr><th>备份名称</th><th>大小</th><th>时间</th></tr></thead>
+        <tbody>
+          <tr><td colspan="3" class="loading">点击「刷新备份列表」加载</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="toolbar bottom-toolbar">
+      <button class="btn" onclick="restoreBackup()">📥 恢复选中备份</button>
+    </div>
+  </section>
+
+  <!-- 状态栏 -->
+  <footer class="status-bar">
+    <div id="progressBar" class="progress-bar"><div class="progress-fill"></div></div>
+    <span id="statusText" class="status-text">就绪 — 连接后端中...</span>
+  </footer>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
