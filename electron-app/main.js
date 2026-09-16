@@ -2,7 +2,7 @@
  * 欧菲斯工具工具箱 — Electron 主进程
  * 启动内嵌的 mz_server.exe 后端，等待就绪后打开 GUI 窗口。
  */
-const { app, BrowserWindow, dialog } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
@@ -89,6 +89,38 @@ function stopServer() {
     }, 1000);
   });
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// 管理员权限 — 检测 + 以管理员身份重启
+// ═══════════════════════════════════════════════════════════════════
+
+function isElevated() {
+  try {
+    const { execFileSync } = require('child_process');
+    execFileSync('net', ['session'], { stdio: 'ignore' });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function relaunchAsAdmin() {
+  // 先停掉后端, 再通过 PowerShell Start-Process -Verb RunAs 触发 UAC 以管理员身份重启
+  return stopServer().then(() => {
+    // 用单引号包裹路径, 避免双引号转义问题; 路径中的单引号加倍
+    const q = process.execPath.replace(/'/g, "''");
+    const cmd = `Start-Process -FilePath '${q}' -Verb RunAs`;
+    const ps = spawn('powershell.exe', ['-NoProfile', '-WindowStyle', 'Hidden', '-Command', cmd], {
+      detached: true,
+      stdio: 'ignore',
+    });
+    ps.unref();
+    setTimeout(() => app.quit(), 800);
+  });
+}
+
+ipcMain.handle('admin:status', () => isElevated());
+ipcMain.handle('admin:relaunch', () => relaunchAsAdmin());
 
 // ═══════════════════════════════════════════════════════════════════
 // 窗口管理

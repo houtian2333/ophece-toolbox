@@ -43,8 +43,13 @@ function setupTabs() {
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+      // 切到「系统清理」时检查管理员权限
+      if (btn.dataset.tab === 'system') checkAdmin();
+      // 切到「备份管理」时刷新
+      if (btn.dataset.tab === 'backup') refreshBackups();
     });
   });
+  checkAdmin();
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -445,6 +450,60 @@ async function previewBasic() {
 // Tab 3: 系统清理
 // ═══════════════════════════════════════════════════════════════════
 
+let _isElevated = null;
+
+/** 需要管理员权限的操作 id 映射 (用于禁用勾选框) */
+const ADMIN_REQUIRED_TASKS = ['dism', 'usn', 'restore', 'hibernate', 'vmem', 'eventlog'];
+
+/** 系统操作的中文名 (用于确认框与提示) */
+const SYS_TASK_NAME = {
+  dism: 'DISM组件清理', usn: 'USN日志删除', restore: '系统还原点删除',
+  hibernate: '关闭休眠', vmem: '转移虚拟内存', eventlog: '事件日志清理',
+  psclean: 'PowerShell综合清理', browser_sqlite: '浏览器深度SQLite',
+  memreduct: '内存整理', prefetch: '预取与分发缓存', appcache: '应用缓存目录',
+  croottmp: 'C盘根目录残留', recycle_force: '强制清空回收站',
+};
+const taskName = tid => SYS_TASK_NAME[tid] || tid;
+
+/** 检查当前进程是否已提权, 并同步 UI (横幅 / 勾选框)
+ *  优先用主进程的 isElevated (进程令牌准确); 后端 /api/admin/status 作为兜底
+ */
+async function checkAdmin() {
+  let elevated;
+  try { elevated = await API.isElevated(); } catch (e) { elevated = null; }
+  if (elevated == null) {
+    try { elevated = (await API.adminStatus())?.admin; } catch (e) {}
+  }
+  _isElevated = !!elevated;
+  renderAdminUI();
+  return _isElevated;
+}
+
+function renderAdminUI() {
+  const banner = document.getElementById('adminBanner');
+  const badge = document.getElementById('adminBadge');
+  if (banner) banner.classList.toggle('hidden', _isElevated);
+  if (badge) {
+    badge.style.display = _isElevated ? 'inline-flex' : 'none';
+    badge.textContent = '🛡 管理员';
+  }
+  // 非管理员时禁用需要提权的系统操作
+  const needAdmin = [...SYS_TASK_MAP]
+    .filter(([, tid]) => ADMIN_REQUIRED_TASKS.includes(tid))
+    .map(([elId]) => elId);
+  needAdmin.forEach(elId => {
+    const el = document.getElementById(elId);
+    if (el) el.disabled = !_isElevated;
+  });
+}
+
+/** 以管理员身份重启 (触发 UAC) */
+async function relaunchAsAdmin() {
+  if (!confirm('将以管理员身份重新启动欧菲斯工具工具箱。\n请在系统弹出的「用户账户控制」窗口点击「是」。\n\n注意: 原窗口会自动关闭, 如有未保存数据请先保存。')) return;
+  setStatus('正在以管理员身份重启...');
+  try { await API.relaunchAsAdmin(); } catch (e) { setStatus('触发管理员重启失败: ' + e.message); }
+}
+
 async function scanSystem() {
   setStatus('正在扫描系统清理项...');
   progress(true); showSpinner('sysSpinner');
@@ -482,7 +541,21 @@ async function cleanSystem() {
     .map(([, tid]) => tid);
 
   if (!tasks.length) return alert('请先勾选要执行的系统清理项');
-  if (!confirm(`以下系统级操作将执行:\n\n${tasks.join('\n')}\n\n确认继续?`)) return;
+
+  // 未提权却勾选了需管理员的任务 → 提示并用管理员身份重启
+  if (_isElevated === false) {
+    const needAdmin = tasks.filter(t => ADMIN_REQUIRED_TASKS.includes(t));
+    if (needAdmin.length) {
+      const msg = `以下操作需要管理员权限, 当前程序未以管理员身份运行:\n\n` +
+        needAdmin.map(t => `   · ${taskName(t)}`).join('\n') +
+        `\n\n这些操作在当前权限下会执行失败。\n是否停止操作, 以管理员身份重启后重试?`;
+      if (!confirm(msg)) return;
+      relaunchAsAdmin();
+      return;
+    }
+  }
+
+  if (!confirm(`以下系统级操作将执行:\n\n${tasks.map(taskName).join('\n')}\n\n确认继续?`)) return;
 
   setStatus('正在执行系统清理...');
   progress(true); showSpinner('sysSpinner');

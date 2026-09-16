@@ -59,8 +59,18 @@
   <!-- ━━━━━━━━━ 系统清理 Tab ━━━━━━━━━ -->
   <section class="tab-content" id="tab-system">
     <div class="warning-banner">⚠ 系统清理涉及系统级操作，请谨慎选择</div>
+    <!-- 管理员权限提示条 -->
+    <div id="adminBanner" class="admin-banner hidden">
+      <span class="admin-icon">🛡</span>
+      <div class="admin-text">
+        <strong>需要管理员权限</strong>
+        <span class="admin-detail">系统清理中的 DISM、USN、还原点、休眠、虚拟内存、事件日志等操作需要管理员身份才能完整扫描与执行。</span>
+      </div>
+      <button id="relaunchAdminBtn" class="btn btn-primary" onclick="relaunchAsAdmin()">以管理员身份重启</button>
+    </div>
     <div class="toolbar">
       <button class="btn btn-primary" onclick="scanSystem()">🔍 扫描系统清理项</button>
+      <span id="adminBadge" class="admin-badge" style="display:none"></span>
       <div id="sysSpinner" class="spinner hidden"></div>
     </div>
     <div id="sysScanInfo" class="sys-scan-info"></div>

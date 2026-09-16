@@ -14,6 +14,7 @@
   GET  /api/backups           — 备份列表
   POST /api/restore           — 恢复备份
   POST /api/stop              — 关闭服务
+  GET  /api/admin/status      — 当前是否具备管理员权限 {admin: bool}
 """
 
 import ctypes
@@ -38,6 +39,14 @@ from pathlib import Path
 VERSION = "1.0.0"
 HOST = "127.0.0.1"
 PORT = 19999
+
+
+def is_admin():
+    """当前进程是否具有管理员权限"""
+    try:
+        return bool(ctypes.windll.shell32.IsUserAnAdmin())
+    except Exception:
+        return False
 
 # ═══════════════════════════════════════════════════════════════════════
 # 磨针 v3.3.2 mozhen.System 原始清理路径表
@@ -1433,6 +1442,8 @@ class APIHandler(BaseHTTPRequestHandler):
             self._handle_backups()
         elif path == "/api/status":
             self._send_json(APIHandler.server_state)
+        elif path == "/api/admin/status":
+            self._send_json({"admin": is_admin()})
         else:
             self._send_json({"error": "not found"}, 404)
 
@@ -1620,7 +1631,7 @@ def main():
     server = HTTPServer((HOST, PORT), APIHandler)
     print(f"磨针C盘清理 后端 API v{VERSION}")
     print(f"监听: http://{HOST}:{PORT}")
-    print(f"端点: /api/ping /api/disk/info /api/scan /api/clean /api/backups /api/restore /api/stop")
+    print(f"端点: /api/ping /api/admin/status /api/disk/info /api/scan /api/clean /api/backups /api/restore /api/stop")
     print("按 Ctrl+C 停止服务")
     try:
         server.serve_forever()

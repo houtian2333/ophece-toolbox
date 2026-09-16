@@ -303,6 +303,35 @@ button, input, .cat-row, .toolbar, .status-bar, .sys-option, .backup-table {
   margin: 10px 0; font-size: 13px; color: var(--stone-600);
   min-height: 44px;
 }
+
+/* 管理员权限提示条 */
+.admin-banner {
+  display: flex; align-items: center; gap: 14px;
+  background: linear-gradient(135deg, rgba(192,57,43,.10), rgba(212,163,115,.14));
+  border: 1.5px solid rgba(192,57,43,.28);
+  border-radius: var(--radius);
+  padding: 12px 16px; margin-bottom: 12px;
+}
+.admin-banner.hidden { display: none; }
+.admin-icon { font-size: 22px; flex-shrink: 0; }
+.admin-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.admin-text strong { color: #a93226; font-size: 14px; }
+.admin-detail { color: var(--stone-600); font-size: 12px; line-height: 1.5; }
+.admin-banner .btn { flex-shrink: 0; }
+
+/* 管理员徽标 (已提权时显示在工具栏) */
+.admin-badge {
+  display: inline-flex; align-items: center;
+  background: rgba(139,157,119,.15); color: var(--sage-dark);
+  border: 1px solid rgba(139,157,119,.35);
+  font-size: 12px; font-weight: 700;
+  padding: 5px 12px; border-radius: var(--radius-sm);
+  margin-left: 8px;
+}
+
+/* 被禁用的系统清理选项 */
+.sys-option input:disabled + span,
+.sys-option input:disabled { opacity: .4; cursor: not-allowed; }
 .sys-options {
   flex: 1; overflow-y: auto;
   background: var(--white); border: 1px solid var(--stone-200);
